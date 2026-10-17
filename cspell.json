@@ -1,0 +1,34 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "ignorePaths": [
+    "node_modules",
+    ".next",
+    "out",
+    "bun.lock",
+    "CHANGELOG.md",
+    ".changeset",
+    "LICENSE",
+    "cspell.json"
+  ],
+  "words": [
+    "biome",
+    "bunx",
+    "changesets",
+    "commitizen",
+    "commitlint",
+    "consolas",
+    "cousine",
+    "cyantrix",
+    "gsap",
+    "knip",
+    "ligaturized",
+    "nosniff",
+    "syncpack",
+    "turbopack",
+    "tweakcn",
+    "vercel",
+    "Oxanium",
+    "Inika"
+  ]
+}
