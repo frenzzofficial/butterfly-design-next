@@ -24,25 +24,54 @@ type ThemeEntry = {
   directory: string;
 };
 
+// Font families are bound once in globals.css to the next/font variables
+// (--font-oxanium, ...). Theme files exported from tweakcn hard-code family
+// names that next/font never registers, so they are dropped here.
+const FONT_FAMILY_PROPS = new Set([
+  "--font-sans",
+  "--font-serif",
+  "--font-mono",
+]);
+
+/**
+ * Turns a source theme into a scoped palette:
+ *   :root  -> [data-theme="<name>"]
+ *   .dark  -> [data-theme="<name>"].dark
+ *
+ * Only those two rules are kept. Everything else a theme export carries
+ * (@import "tailwindcss", @custom-variant, @theme inline, @layer base) already
+ * lives once in globals.css, so repeating it per theme would only bloat the CSS.
+ */
 const scopeThemeCss = (name: string, css: string): string => {
   const root = postcss.parse(css);
 
   let matched = false;
 
-  root.walkRules((rule) => {
-    const selector = rule.selector.trim();
+  for (const node of [...(root.nodes ?? [])]) {
+    if (node.type !== "rule") {
+      node.remove();
+      continue;
+    }
+
+    const selector = node.selector.trim();
 
     if (selector === ":root") {
-      rule.selector = `[data-theme="${name}"]`;
+      node.selector = `[data-theme="${name}"]`;
       matched = true;
-      return;
+    } else if (selector === ".dark") {
+      node.selector = `[data-theme="${name}"].dark`;
+      matched = true;
+    } else {
+      node.remove();
+      continue;
     }
 
-    if (selector === ".dark") {
-      rule.selector = `[data-theme="${name}"].dark`;
-      matched = true;
-    }
-  });
+    node.walkDecls((decl) => {
+      if (FONT_FAMILY_PROPS.has(decl.prop)) {
+        decl.remove();
+      }
+    });
+  }
 
   if (!matched) {
     console.warn(

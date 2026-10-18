@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { parseEnv } from "../utils/parse-env";
+import { parseEnv } from "@/packages/utils/parse-env";
 
 // Client Environment Schema
 const parsedEnvSchema = z.object({
@@ -17,4 +17,5 @@ export const envClientConfig = Object.freeze({
   clientPrefix: parsedEnv.NEXT_PUBLIC_CLIENT_PREFIX,
 });
 
+/** @public */
 export type EnvClientConfig = typeof envClientConfig;

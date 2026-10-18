@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { parseEnv } from "../utils/parse-env";
+import { parseEnv } from "@/packages/utils/parse-env";
 
 // Server Environment Schema
 const parsedEnvSchema = z.object({
@@ -28,4 +28,5 @@ export const envAppConfig = Object.freeze({
   isTest: parsedEnv.NODE_ENV === "test",
 });
 
+/** @public */
 export type EnvAppConfig = typeof envAppConfig;

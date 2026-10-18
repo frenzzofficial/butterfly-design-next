@@ -1,0 +1,20 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+
+  // Knip's Next.js plugin already finds app/ routes, next.config.ts and
+  // metadata files, so only extra entry points are listed here.
+  "entry": [
+    // Public surface of the UI kit: the product this template ships.
+    "src/components/ui/index.ts",
+
+    // Ready-made error and async helpers for the buyer's API layer
+    // (axios + Zod). Kept intentionally even before the first call site.
+    "src/packages/utils/async-handler.ts"
+  ],
+
+  // globals.css is included so knip sees `@import "tailwindcss"` and counts the
+  // dependency as used. The preset sources under src/styles/themes are read by
+  // the theme build script through the filesystem, not through imports, so they
+  // stay out of the project on purpose.
+  "project": ["src/**/*.{js,jsx,ts,tsx}", "src/styles/globals.css"]
+}

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { parseEnv } from "../utils/parse-env";
+import { parseEnv } from "@/packages/utils/parse-env";
 
 // Social Environment Schema
 const parsedEnvSchema = z.object({
@@ -53,4 +53,5 @@ export const envSocialConfig = Object.freeze({
   CURRENT_REPOSITORY: parsedEnv.NEXT_PUBLIC_CURRENT_REPOSITORY,
 });
 
+/** @public */
 export type EnvSocialConfig = typeof envSocialConfig;

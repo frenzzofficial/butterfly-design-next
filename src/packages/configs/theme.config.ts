@@ -1,10 +1,10 @@
-import { envPublicConfig } from "../env/public.env";
+import { envPublicConfig } from "@/packages/env/public.env";
 
 const THEME_STORAGE_KEY = `${envPublicConfig.APP_NAME}-theme`;
 
 export const themeConfig = {
   storageKey: THEME_STORAGE_KEY,
-  defaultTheme: "system",
+  defaultTheme: envPublicConfig.ACTIVE_THEME,
   enableSystem: true,
   disableTransitionOnChange: true,
 } as const;

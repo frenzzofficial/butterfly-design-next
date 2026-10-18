@@ -2,19 +2,32 @@
 
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import type { ReactNode } from "react";
-import { themeConfig } from "@/packages/configs/theme.config";
 
 interface ThemeProviderProps {
   children: ReactNode;
+
+  /** localStorage key that remembers the visitor's light/dark choice. */
+  storageKey: string;
+
+  /** "system", "light" or "dark". */
+  defaultTheme: string;
 }
 
-export default function ThemeProvider({ children }: ThemeProviderProps) {
+/**
+ * Light/dark mode. The values come from layout.tsx as props so the env config
+ * stays out of the client bundle.
+ */
+export default function ThemeProvider({
+  children,
+  storageKey,
+  defaultTheme,
+}: ThemeProviderProps) {
   return (
     <NextThemesProvider
       attribute="class"
-      storageKey={themeConfig.storageKey}
-      defaultTheme={themeConfig.defaultTheme}
-      enableSystem={themeConfig.enableSystem}
+      storageKey={storageKey}
+      defaultTheme={defaultTheme}
+      enableSystem
       disableTransitionOnChange
     >
       {children}

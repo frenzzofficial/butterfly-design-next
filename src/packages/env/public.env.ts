@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { DESIGN_PRESET_NAMES } from "../configs/design-preset.config";
-import { parseEnv } from "../utils/parse-env";
+import { DESIGN_PRESET_NAMES } from "@/packages/configs/design-preset.config";
+import { parseEnv } from "@/packages/utils/parse-env";
 
 // Public Environment Schema
 const parsedEnvSchema = z.object({
@@ -11,7 +11,7 @@ const parsedEnvSchema = z.object({
     .min(1)
     .default("butterfly-design-next"),
 
-  NEXT_PUBLIC_APP_VERSION: z.string().trim().min(1).default("2.0.0"),
+  NEXT_PUBLIC_APP_VERSION: z.string().trim().min(1).default("1.0.0"),
 
   NEXT_PUBLIC_APP_DESCRIPTION: z
     .string()
@@ -30,6 +30,17 @@ const parsedEnvSchema = z.object({
     .min(1)
     .default("Top 1% next.js starter template for your frontend development"),
 
+  // Sub-path the site is served from, e.g. "/butterfly-design-next" on GitHub
+  // Pages project sites. Leave empty for a custom domain or the site root.
+  NEXT_PUBLIC_BASE_PATH: z
+    .string()
+    .trim()
+    .regex(
+      /^(\/[^/\s]+)*$/,
+      'NEXT_PUBLIC_BASE_PATH must be empty or start with "/" and not end with "/"',
+    )
+    .default(""),
+
   NEXT_PUBLIC_LOGO_URL: z.string().trim().min(1).default("/logo.png"),
 
   NEXT_PUBLIC_OG_IMAGE_URL: z.string().trim().optional(),
@@ -44,12 +55,8 @@ const parsedEnvSchema = z.object({
     .enum(["system", "light", "dark"])
     .default("system"),
 
-  // Google Verification
-  NEXT_PUBLIC_GOOGLE_VERIFICATION: z
-    .string()
-    .trim()
-    .min(1)
-    .default("google-verification-code"),
+  // Google Search Console verification token (omitted from <head> when unset)
+  NEXT_PUBLIC_GOOGLE_VERIFICATION: z.string().trim().min(1).optional(),
 });
 
 // Validated Public Environment
@@ -64,6 +71,7 @@ export const envPublicConfig = Object.freeze({
 
   // Site
   SITE_URL: parsedEnv.NEXT_PUBLIC_SITE_URL,
+  BASE_PATH: parsedEnv.NEXT_PUBLIC_BASE_PATH,
   SITE_TITLE: parsedEnv.NEXT_PUBLIC_SITE_TITLE,
   LOGO_URL: parsedEnv.NEXT_PUBLIC_LOGO_URL,
   OG_IMAGE_URL: parsedEnv.NEXT_PUBLIC_OG_IMAGE_URL,
@@ -76,4 +84,5 @@ export const envPublicConfig = Object.freeze({
   GOOGLE_VERIFICATION: parsedEnv.NEXT_PUBLIC_GOOGLE_VERIFICATION,
 });
 
+/** @public */
 export type EnvPublicConfig = typeof envPublicConfig;

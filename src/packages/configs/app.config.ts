@@ -1,10 +1,10 @@
-import { envAppConfig } from "../env/app.env";
-import { envClientConfig } from "../env/client.env";
-import { envPublicConfig } from "../env/public.env";
-import { envSocialConfig } from "../env/social.env";
-import { themeConfig } from "./theme.config";
+import { themeConfig } from "@/packages/configs/theme.config";
+import { envAppConfig } from "@/packages/env/app.env";
+import { envClientConfig } from "@/packages/env/client.env";
+import { envPublicConfig } from "@/packages/env/public.env";
+import { envSocialConfig } from "@/packages/env/social.env";
 
-const apiBaseUrl = `${envClientConfig.clientOrigin}/${envClientConfig.clientPrefix}`;
+const apiBaseUrl = `${envClientConfig.clientOrigin.replace(/\/+$/, "")}/${envClientConfig.clientPrefix.replace(/^\/+/, "")}`;
 
 const appConfig = {
   // Application
@@ -21,11 +21,12 @@ const appConfig = {
     title: envPublicConfig.SITE_TITLE,
     description: envPublicConfig.APP_DESCRIPTION,
     url: envPublicConfig.SITE_URL,
+    basePath: envPublicConfig.BASE_PATH,
     logo: envPublicConfig.LOGO_URL,
     ogImage: envPublicConfig.OG_IMAGE_URL,
     theme: envPublicConfig.ACTIVE_THEME,
     designPreset: envPublicConfig.ACTIVE_DESIGN_PRESET,
-    titleTemplate: "%s | Next Template",
+    titleTemplate: `%s | ${envPublicConfig.APP_NAME}`,
   },
 
   // Author

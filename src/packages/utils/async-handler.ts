@@ -1,4 +1,4 @@
-import { type AppError, toAppError } from "./errors";
+import { type AppError, toAppError } from "@/packages/utils/errors";
 
 /**
  * asyncHandler.ts

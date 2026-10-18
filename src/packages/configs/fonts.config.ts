@@ -2,37 +2,38 @@ import { Cousine, Inika, Oxanium } from "next/font/google";
 import localFont from "next/font/local";
 
 const oxanium = Oxanium({
-  variable: "--font-sans",
+  variable: "--font-oxanium",
   subsets: ["latin"],
   display: "swap",
 });
 
 const inika = Inika({
-  variable: "--font-serif",
+  variable: "--font-inika",
   subsets: ["latin"],
   display: "swap",
   weight: ["400", "700"],
 });
 
 const cousine = Cousine({
-  variable: "--font-mono",
+  variable: "--font-cousine",
   subsets: ["latin"],
   display: "swap",
   weight: ["400"],
 });
 
 /**
- * Personal/brand font — not tied to any theme's --font-sans/--font-serif/
- * --font-mono slots. Mounted globally (see styles.config.ts's
- * PERSONAL_FONTS) and exposed as the `font-brilliant` utility class via
- * StyleTheme.css, so it's usable anywhere regardless of the active theme.
- * File: src/assets/fonts/brilliant-performer.otf ("Brilliant Performer",
- * Regular, single static weight).
+ * Personal/brand font, not tied to a preset. It is mounted on <html> for every
+ * page (see BRAND_FONTS in design-preset.config.ts) and exposed as the
+ * `font-brand` utility through globals.css.
+ *
+ * The file is src/assets/fonts/custom.ttf. To use another font, change `src`
+ * below (georgia.ttf and brilliant-performer.otf ship in the same folder).
+ *
+ * The three Google fonts expose --font-oxanium, --font-inika and
+ * --font-cousine. globals.css maps them onto Tailwind's font-sans, font-serif
+ * and font-mono, so swapping a font means editing this file and that mapping.
  */
 
-// custom fonts
-// src: "../../assets/fonts/georgia.ttf",
-// src: "../../assets/fonts/brilliant-performer.otf",
 const CustomFont = localFont({
   src: "../../assets/fonts/custom.ttf",
   variable: "--font-custom",

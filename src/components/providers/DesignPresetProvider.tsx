@@ -8,13 +8,11 @@ import {
   useState,
 } from "react";
 
-import appConfig from "@/packages/configs/app.config";
 import {
+  DESIGN_PRESET_STORAGE_KEY,
   DESIGN_PRESETS,
   type DesignPresetName,
 } from "@/packages/configs/design-preset.config";
-
-const STORAGE_KEY = "design-preset";
 
 type DesignPresetContextValue = {
   /** The active design preset name, matching a data-theme attribute. */
@@ -37,30 +35,55 @@ const DesignPresetContext = createContext<DesignPresetContextValue | null>(
 const isValidPreset = (value: string | null): value is DesignPresetName =>
   value !== null && DESIGN_PRESETS.some((preset) => preset.name === value);
 
-export const DesignPresetProvider = ({ children }: { children: ReactNode }) => {
-  // Keep the initial value consistent with layout.tsx to avoid hydration mismatches.
-  const DEFAULT_PRESET = appConfig.site.designPreset as DesignPresetName;
+/** Applies a preset to <html> and remembers it for the next visit. */
+const applyPreset = (preset: DesignPresetName) => {
+  document.documentElement.setAttribute("data-theme", preset);
 
+  try {
+    window.localStorage.setItem(DESIGN_PRESET_STORAGE_KEY, preset);
+  } catch {
+    // Storage can be unavailable (private mode, blocked cookies). The preset
+    // still applies for this visit.
+  }
+};
+
+type DesignPresetProviderProps = {
+  children: ReactNode;
+
+  /**
+   * Preset rendered on the server. layout.tsx passes it in, which keeps the
+   * (Zod-based) env config out of the client bundle and the first render
+   * identical to the server HTML.
+   */
+  defaultPreset: DesignPresetName;
+};
+
+export const DesignPresetProvider = ({
+  children,
+  defaultPreset,
+}: DesignPresetProviderProps) => {
   const [currentPreset, setCurrentPreset] =
-    useState<DesignPresetName>(DEFAULT_PRESET);
+    useState<DesignPresetName>(defaultPreset);
 
-  // Restore the saved preference after mounting.
+  // Sync state with the saved preference after mounting. The matching
+  // data-theme attribute is already set by the inline script in layout.tsx, so
+  // nothing is written back here and the default never flashes over it.
   useEffect(() => {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
+    try {
+      const stored = window.localStorage.getItem(DESIGN_PRESET_STORAGE_KEY);
 
-    if (isValidPreset(stored)) {
-      setCurrentPreset(stored);
+      if (isValidPreset(stored)) {
+        setCurrentPreset(stored);
+        document.documentElement.setAttribute("data-theme", stored);
+      }
+    } catch {
+      // Storage unavailable: keep the default preset.
     }
   }, []);
 
-  // Apply the active preset to the document and persist the preference.
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", currentPreset);
-    window.localStorage.setItem(STORAGE_KEY, currentPreset);
-  }, [currentPreset]);
-
   const setPreset = (preset: DesignPresetName) => {
     setCurrentPreset(preset);
+    applyPreset(preset);
   };
 
   const cyclePreset = () => {
@@ -68,9 +91,7 @@ export const DesignPresetProvider = ({ children }: { children: ReactNode }) => {
       (preset) => preset.name === currentPreset,
     );
 
-    const nextIndex = (currentIndex + 1) % DESIGN_PRESETS.length;
-
-    setCurrentPreset(DESIGN_PRESETS[nextIndex].name);
+    setPreset(DESIGN_PRESETS[(currentIndex + 1) % DESIGN_PRESETS.length].name);
   };
 
   return (

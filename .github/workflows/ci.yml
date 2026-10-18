@@ -9,14 +9,37 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   verify:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
+
       - uses: oven-sh/setup-bun@v2
+        with:
+          # Keep in sync with "packageManager" in package.json.
+          bun-version: 1.4.2
+
       - run: bun install --frozen-lockfile
-      - run: bun run verify:ci
-      - run: bun run deps:check
-      - run: bun run build
-      - run: bun run size
+
+      # Biome, TypeScript, spelling and knip (unused files, exports, dependencies)
+      - name: Verify
+        run: bun run verify:ci
+
+      - name: Check dependency versions
+        run: bun run deps:check
+
+      # Regular Next.js build, then the static export that GitHub Pages serves.
+      - name: Build
+        run: bun run build
+
+      - name: Build static export
+        run: bun run build:export
+
+      # Measures the files in ./out, so it must run after the export.
+      - name: Check bundle size
+        run: bun run size

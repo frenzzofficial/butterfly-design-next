@@ -1,20 +1,31 @@
 "use client";
 
-import { DesignPresetProvider } from "../providers/DesignPresetProvider";
-import ThemeProvider from "../providers/ThemeProvider";
-import Footer from "./Footer";
-import Header from "./Header";
+import type { ReactNode } from "react";
+import { DesignPresetProvider } from "@/components/providers/DesignPresetProvider";
+import ThemeProvider from "@/components/providers/ThemeProvider";
+import type { DesignPresetName } from "@/packages/configs/design-preset.config";
 
 interface AppClientLayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
+  defaultPreset: DesignPresetName;
+  themeStorageKey: string;
+  defaultTheme: string;
 }
-const AppClientLayout = ({ children }: AppClientLayoutProps) => {
+
+/**
+ * Client-side providers for the whole app. Header, footer and pages are passed
+ * in as children, so they stay Server Components.
+ */
+const AppClientLayout = ({
+  children,
+  defaultPreset,
+  themeStorageKey,
+  defaultTheme,
+}: AppClientLayoutProps) => {
   return (
-    <ThemeProvider>
-      <DesignPresetProvider>
-        <Header />
-        <main className="main screen-height">{children}</main>
-        <Footer />
+    <ThemeProvider storageKey={themeStorageKey} defaultTheme={defaultTheme}>
+      <DesignPresetProvider defaultPreset={defaultPreset}>
+        {children}
       </DesignPresetProvider>
     </ThemeProvider>
   );
